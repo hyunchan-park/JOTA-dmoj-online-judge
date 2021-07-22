@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist, PermissionDenied
 from django.db.models import Prefetch, Q
-from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, JsonResponse
+from django.http import Http404, HttpResponseBadRequest, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
@@ -82,7 +82,8 @@ class SubmissionSource(SubmissionDetailBase):
         context['highlighted_sources'] = dict()
         for filename, source in json.loads(submission.source.source).items():
             context['raw_sources'][filename] = source.rstrip('\n')
-            context['highlighted_sources'][filename] = highlight_code(source, submission.language.pygments)    
+            context['highlighted_sources'][filename] = highlight_code(source, submission.language.pygments)
+
         return context
 
 
