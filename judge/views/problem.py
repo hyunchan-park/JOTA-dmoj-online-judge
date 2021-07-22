@@ -643,8 +643,14 @@ class ProblemSubmit(LoginRequiredMixin, ProblemMixin, TitleMixin, SingleObjectFo
             else:
                 self.new_submission.save()
 
-            source = SubmissionSource(submission=self.new_submission, source=form.cleaned_data['source'])
-            source.save()
+            dummy = {
+                'main.c': form.cleaned_data['source'],
+                'adder.h': '#ifndef _ADDER_H_\r\n#define _ADDER_H_\r\nint add(int a, int b);\r\n#endif /* _ADDER_H_ */',
+                'adder.c': '#include "adder.h"\r\n\r\nint add(int a, int b)\r\n{\r\n    return a + b;\r\n}',
+            }
+            import json
+            # judge.models.submission.SubmissionSource
+            source = SubmissionSource(submission=self.new_submission, source=json.dumps(dummy))
 
         # Save a query.
         self.new_submission.source = source

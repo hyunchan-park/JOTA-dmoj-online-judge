@@ -41,19 +41,23 @@
     <hr class="half-hr">
     <br>
     <div class="source-wrap">
-        <table>
-            <tr>
-                <td class="source-ln">
-                    <div>
-                        {% for line in raw_source.split('\n') %}
-                            <a href="#line-{{ loop.index }}" name="line-{{ loop.index }}">
-                                <pre class="line">{{ loop.index }}</pre>
-                            </a>
-                        {% endfor %}
-                    </div>
-                </td>
-                <td class="source-code">{{ highlighted_source }}</td>
-            </tr>
-        </table>
+        {% for filename, src in highlighted_sources.items() %}
+            <h3><b>{{ filename }}</b></h3>
+            <table>
+                <tr>
+                    <td class="source-ln">
+                        <div>
+                            {% for line in raw_sources[filename].split('\n') %}
+                                <a href="#{{ filename }}#line-{{ loop.index }}" name="{{ filename }}#line-{{ loop.index }}">
+                                    <pre class="line">{{ loop.index }}</pre>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td class="source-code">{{ src }}</td>
+                </tr>
+            </table>
+            <br>
+        {% endfor %}
     </div>
 {% endblock %}

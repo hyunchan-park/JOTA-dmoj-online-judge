@@ -1,0 +1,8 @@
+{% block body %}
+
+{% for filename, src in highlighted_sources.items() %}
+<b><pre>/* {{ filename }} */</pre></b>
+{{ src }}
+{% endfor %}
+
+{% endblock %}
