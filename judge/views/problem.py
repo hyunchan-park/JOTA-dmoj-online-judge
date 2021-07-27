@@ -651,6 +651,7 @@ class ProblemSubmit(LoginRequiredMixin, ProblemMixin, TitleMixin, SingleObjectFo
             import json
             # judge.models.submission.SubmissionSource
             source = SubmissionSource(submission=self.new_submission, source=json.dumps(dummy))
+            source.save()
 
         # Save a query.
         self.new_submission.source = source
