@@ -263,13 +263,26 @@
             <input type="submit" value="{{ _('Submit!') }}" class="button"
                     {% if request.in_contest and submission_limit and not submissions_left %}disabled{% endif %}>
     </div>
-
-    <input type="file" id="uploaded_file_names" multiple accept="*" />
-    <input type="hidden" id="source_files" name="source_files" />
+    <div>
+        <input type="file" id="uploaded_file_names" multiple accept="*" onchange="updateFilesNameList();"/>
+        <input type="hidden" id="source_files" name="source_files" /><br>
+        selected files: <b><span id="inputElementNameList"></span></b>
+    </div>
 
     <script type="text/javascript">
         const inputElement = document.getElementById("uploaded_file_names");
+        var files = document.getElementById('uploaded_file_names').files;
         inputElement.addEventListener("change", sourceFilesHandler, false);
+
+        function updateFilesNameList() {
+            var filesNameList = new String();
+            
+            for (var file of files) {
+                filesNameList += "[" + file.name + "] ";
+            }
+
+            document.getElementById("inputElementNameList").innerHTML = filesNameList;
+        }
 
         function sourceFilesHandler() {
             sourceMap.clear();
@@ -293,7 +306,6 @@
         }
 
         function readBlob() {
-            const files = document.getElementById('uploaded_file_names').files;
 
             if (0 === files.length) {
                 alert('Please select a file!');
