@@ -266,7 +266,7 @@
     <div>
         <input type="file" id="uploaded_file_names" multiple accept="*" onchange="updateFilesNameList();"/>
         <input type="hidden" id="source_files" name="source_files" /><br>
-        selected files: <b><span id="inputElementNameList"></span></b>
+        <p>selected files: </p><b><span id="inputElementNameList"></span></b>
     </div>
 
     <script type="text/javascript">
@@ -275,13 +275,12 @@
         inputElement.addEventListener("change", sourceFilesHandler, false);
 
         function updateFilesNameList() {
-            var filesNameList = new String();
+
+            document.getElementById("inputElementNameList").innerHTML = "";
             
             for (var file of files) {
-                filesNameList += "[" + file.name + "] ";
+                document.getElementById("inputElementNameList").innerHTML += "<p>[" + file.name + "]</p>";
             }
-
-            document.getElementById("inputElementNameList").innerHTML = filesNameList;
         }
 
         function sourceFilesHandler() {
