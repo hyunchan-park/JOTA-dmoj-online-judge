@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import shutil
@@ -643,8 +644,19 @@ class ProblemSubmit(LoginRequiredMixin, ProblemMixin, TitleMixin, SingleObjectFo
             else:
                 self.new_submission.save()
 
-            source = SubmissionSource(submission=self.new_submission, source=form.cleaned_data['source'])
-            source.save()
+            data_dict = dict(form.data)['source_files'][0]
+            if (len(data_dict) > 0):
+                dummy = data_dict
+                print("multiple\n", dummy)
+                source = SubmissionSource(submission=self.new_submission, source=dummy)
+                source.save()
+            else:
+                dummy = {
+                    'main.c': form.cleaned_data['source'],
+                }
+                print("single\n", json.dumps(dummy))
+                source = SubmissionSource(submission=self.new_submission, source=json.dumps(dummy))
+                source.save()
 
         # Save a query.
         self.new_submission.source = source
