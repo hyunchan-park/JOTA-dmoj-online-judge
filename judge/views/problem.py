@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import shutil
@@ -643,15 +644,19 @@ class ProblemSubmit(LoginRequiredMixin, ProblemMixin, TitleMixin, SingleObjectFo
             else:
                 self.new_submission.save()
 
-            dummy = {
-                'main.c': form.cleaned_data['source'],
-                'adder.h': '#ifndef _ADDER_H_\r\n#define _ADDER_H_\r\nint add(int a, int b);\r\n#endif /* _ADDER_H_ */',
-                'adder.c': '#include "adder.h"\r\n\r\nint add(int a, int b)\r\n{\r\n    return a + b;\r\n}',
-            }
-            import json
-            # judge.models.submission.SubmissionSource
-            source = SubmissionSource(submission=self.new_submission, source=json.dumps(dummy))
-            source.save()
+            data_dict = dict(form.data)['source_files'][0]
+            if (len(data_dict) > 0):
+                dummy = data_dict
+                print("multiple\n", dummy)
+                source = SubmissionSource(submission=self.new_submission, source=dummy)
+                source.save()
+            else:
+                dummy = {
+                    'main.c': form.cleaned_data['source']
+                }
+                print("single\n", json.dumps(dummy))
+                source = SubmissionSource(submission=self.new_submission, source=json.dumps(dummy))
+                source.save()
 
         # Save a query.
         self.new_submission.source = source
