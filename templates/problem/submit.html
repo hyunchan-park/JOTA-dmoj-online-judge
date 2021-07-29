@@ -263,5 +263,72 @@
                        {% if request.in_contest and submission_limit and not submissions_left %}disabled{% endif %}>
             </div>
         {% endif %}
+ 
+        <form id="uploadedFiles" method="post" enctype="multipart/form-data">
+            <div>
+                <p><input type="file" id="files" name="file" multiple="multiple" onchange="updateFilesNameList();"></p>
+                Selected Files: <b><span id="filesNameList"></span></b>
+            </div>
+            <button id="readBtn">Read File</button>
+            <div id="fileContents"></div>
+        </form>
+
+        <script>
+
+            var files = document.getElementById('files').files;
+            var filesDict = {};
+
+            function updateFilesNameList() {
+
+                var filesNameList  = new String();
+
+                for (var i = 0; i < files.length; i++)  {
+
+                    var file = files[i];
+                    filesNameList += "[" + file.name + "] ";
+                }
+                
+                document.getElementById("filesNameList").innerHTML = filesNameList;
+            }
+
+            function fileReadAsText(i) {
+
+                if (!files.length) {
+                    alert('Please select a file!');
+                    return;
+                }
+            
+                var file = files[i];
+            
+                var reader = new FileReader();
+
+                var blob = file.slice(0, file.size);
+                
+                reader.readAsText(blob);
+            
+                reader.onloadend = function(evt) {
+
+                    if (evt.target.readyState == FileReader.DONE) {
+  
+                        filesDict[file.name] = evt.target.result;
+                        document.getElementById("fileContents").textContent += evt.target.result;
+                    }
+                };
+
+            }
+            
+            document.getElementById('readBtn').addEventListener('click', function(evt) {
+                
+                document.getElementById("fileContents").textContent = '';
+
+                for (var i = 0; i < files.length; i++) {
+
+                    fileReadAsText(i);
+                }
+
+                // console.log(filesDict);
+            }, false);
+            
+        </script>
     </form>
 {% endblock %}
