@@ -652,7 +652,7 @@ class ProblemSubmit(LoginRequiredMixin, ProblemMixin, TitleMixin, SingleObjectFo
                 source.save()
             else:
                 dummy = {
-                    'main.c': form.cleaned_data['source']
+                    'main.c': form.cleaned_data['source'],
                 }
                 print("single\n", json.dumps(dummy))
                 source = SubmissionSource(submission=self.new_submission, source=json.dumps(dummy))
