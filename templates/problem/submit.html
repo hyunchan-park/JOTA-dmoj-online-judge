@@ -118,6 +118,11 @@
                 event.preventDefault();
                 $('#problem_submit').find(':submit').attr('disabled', false);
             }
+
+            else if (($('#id_source').val().length == 0 ) && (files.length == 0)) {
+                alert("Please enter your source code or upload source file");
+                event.preventDefault();
+            }
         });
     });
 </script>
