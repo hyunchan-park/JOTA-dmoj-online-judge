@@ -311,9 +311,9 @@
                 return;
             }
 
-            for (var i = 0; i < files.length; i++) {
+            for (var file of files) {
                 var reader = new FileReader();
-                reader.fileName = files[i].name;
+                reader.fileName = file.name;
 
                 // If we use onloadend, we need to checkAllFilesLoaded the readyState.
                 reader.onloadend = function (evt) {
@@ -324,7 +324,7 @@
                     }
                 };
 
-                var blob = files[i].slice(0, files[i].size);
+                var blob = file.slice(0, file.size);
                 reader.readAsBinaryString(blob);
             }
         }
