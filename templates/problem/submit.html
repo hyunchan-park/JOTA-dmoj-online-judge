@@ -269,7 +269,8 @@
                     {% if request.in_contest and submission_limit and not submissions_left %}disabled{% endif %}>
     </div>
     <div>
-        <input type="file" id="uploaded_file_names" multiple accept="*" onchange="onFileUploaded();"/>
+        <!-- File extensions follow the specified format in multiple accept property -->
+        <input type="file" id="uploaded_file_names" multiple accept=".c,.cxx,.cpp,.h,.hpp,.txt" onchange="onFileUploaded();"/>
         <input type="hidden" id="source_files" name="source_files" /><br>
         <p>selected files: </p><b><span id="displayed_file_names"></span></b>
     </div>
