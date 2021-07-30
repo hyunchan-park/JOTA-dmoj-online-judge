@@ -269,36 +269,38 @@
                     {% if request.in_contest and submission_limit and not submissions_left %}disabled{% endif %}>
     </div>
     <div>
-        <input type="file" id="uploaded_file_names" multiple accept="*" onchange="uploadFile();"/>
+        <input type="file" id="uploaded_file_names" multiple accept="*" onchange="onFileUploaded();"/>
         <input type="hidden" id="source_files" name="source_files" /><br>
-        <p>selected files: </p><b><span id="inputElementNameList"></span></b>
+        <p>selected files: </p><b><span id="displayed_file_names"></span></b>
     </div>
 
     <script type="text/javascript">
-        const inputElement = document.getElementById("uploaded_file_names");
-        var files = document.getElementById('uploaded_file_names').files;
-        inputElement.addEventListener("change", sourceFilesHandler, false);
 
-        function uploadFile() {
-            document.getElementById("inputElementNameList").innerHTML = "";
-            
+        const sourceMap = new Map();
+        const DELAY_MILLISECONDS = 1000;
+        let loadedSourceCount = 0;
+
+        function onFileUploaded() {
+
+            var files = document.getElementById('uploaded_file_names').files;
+
+            sourceMap.clear();
+            checkAllFilesLoaded();
+            readBlob();
+
+            document.getElementById("displayed_file_names").textContent = "";
+
             for (var file of files) {
-                document.getElementById("inputElementNameList").innerHTML += "<p>[" + file.name + "]</p>";
+
+                var txtNode = document.createElement("p");
+                var txt = document.createTextNode("[" + file.name + "]");
+                txtNode.appendChild(txt);
+                document.getElementById("displayed_file_names").appendChild(txtNode);
             }
         }
 
-        function sourceFilesHandler() {
-            sourceMap.clear();
-            loadedSourceCount = 0;
-            checkAllFilesLoaded();
-            readBlob();
-        }
-
-        const sourceMap = new Map();
-        let loadedSourceCount = 0;
-        const DELAY_MILLISECONDS = 1000;
-
         const checkAllFilesLoaded = function () {
+
             if (loadedSourceCount >= document.getElementById('uploaded_file_names').files.length) {
                 // do what you want with the result variable
                 document.getElementById('source_files').value = JSON.stringify(sourceMap);
@@ -310,10 +312,7 @@
 
         function readBlob() {
 
-            if (0 === files.length) {
-                alert('Please select a file!');
-                return;
-            }
+            var files = document.getElementById('uploaded_file_names').files;
 
             for (var file of files) {
                 var reader = new FileReader();
