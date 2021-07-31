@@ -18,6 +18,18 @@
             background: rgba(255, 212, 0, 0.48);
         }
     </style>
+    
+    <link rel="stylesheet" href="{{ static('jquery-ui.css') }}" type="text/css">
+{% endblock %}
+
+{% block js_media %}
+    <script src="{{ static('jquery-1.12.4.js') }}" type="text/javascript"></script>
+    <script src="{{ static('jquery-ui.js') }}" type="text/javascript"></script>
+    <script>
+        $( function() {
+            $( "#tabs" ).tabs();
+        } );
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -40,24 +52,31 @@
     <br>
     <hr class="half-hr">
     <br>
-    <div class="source-wrap">
+
+    <div id="tabs">
+        <ul>
+          {% for filename, src in highlighted_sources.items() %}
+            <li><a href="#{{ filename }}">{{ filename }}</a></li>
+          {% endfor %}
+        </ul>
         {% for filename, src in highlighted_sources.items() %}
-            <h3><b>{{ filename }}</b></h3>
-            <table>
-                <tr>
-                    <td class="source-ln">
-                        <div>
-                            {% for line in raw_sources[filename].split('\n') %}
-                                <a href="#{{ filename }}#line-{{ loop.index }}" name="{{ filename }}#line-{{ loop.index }}">
-                                    <pre class="line">{{ loop.index }}</pre>
-                                </a>
-                            {% endfor %}
-                        </div>
-                    </td>
-                    <td class="source-code">{{ src }}</td>
-                </tr>
-            </table>
-            <br>
+            <div id="{{ filename }}">
+                <div class="source-wrap">
+                    <table>
+                        <td class="source-ln">
+                            <div>
+                                {% for line in raw_sources[filename].split('\n') %}
+                                    <a href="#{{ filename }}#L{{ loop.index }}" name="{{ filename }}#L{{ loop.index }}">
+                                        <pre class="line">{{ loop.index }}</pre>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="source-code">{{ src }}</td>
+                    </table>
+                </div>
+            </div>
         {% endfor %}
     </div>
 {% endblock %}
+</html>
