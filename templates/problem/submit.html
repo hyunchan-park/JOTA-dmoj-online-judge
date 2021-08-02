@@ -324,7 +324,7 @@
             if (loadedSourceCount >= document.getElementById('uploaded_file_names').files.length) {
                 // do what you want with the result variable
                 document.getElementById('source_files').value = JSON.stringify(sourceMap);
-
+                loadedSourceCount = 0;
                 return;
             }
             setTimeout(checkAllFilesLoaded, DELAY_MILLISECONDS);
