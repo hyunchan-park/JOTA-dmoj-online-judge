@@ -94,6 +94,23 @@
         });
 
         $('#ace_source').on('ace_load', function (e, editor) {
+            if (editor.getSession().getValue().length > 0) {
+                let jsonOrNull = null;
+                try {
+                    jsonOrNull = JSON.parse(editor.getSession().getValue());
+                } catch (e) { }
+                if (null != jsonOrNull) {
+                    let file_names = Object.keys(jsonOrNull);
+                    if (file_names.length == 1) { // when single file or source code
+                        editor.getSession().setValue(jsonOrNull[file_names[0]]);
+                        //alert("파일 1개");
+                    } else if (file_names.length > 1) { // when multiple files
+                        editor.getSession().setValue("");
+                        editor.setReadOnly(true);
+                        alert("파일 2개 이상은 파일첨부로만 제출 가능");
+                    }
+                }
+            }
             update_language_template();
             editor.commands.addCommand({
                 name: 'save',
