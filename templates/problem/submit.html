@@ -295,7 +295,7 @@
 
     <script type="text/javascript">
 
-        const sourceMap = new Map();
+        let sourceMap = new Map();
         const DELAY_MILLISECONDS = 1000;
         let loadedSourceCount = 0;
 
@@ -303,7 +303,7 @@
 
             var files = document.getElementById('uploaded_file_names').files;
 
-            sourceMap.clear();
+            sourceMap = new Map();
             document.getElementById('source_files').value = ""
             checkAllFilesLoaded();
             readBlob();
@@ -325,6 +325,7 @@
                 // do what you want with the result variable
                 document.getElementById('source_files').value = JSON.stringify(sourceMap);
                 loadedSourceCount = 0;
+                sourceMap = new Map();
                 return;
             }
             setTimeout(checkAllFilesLoaded, DELAY_MILLISECONDS);
