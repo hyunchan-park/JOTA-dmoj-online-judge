@@ -122,6 +122,7 @@
             if (($('#id_source').val().length == 0 ) && (document.getElementById('uploaded_file_names').files.length == 0)) {
                 alert("Please enter your source code or upload source file");
                 event.preventDefault();
+                $('#problem_submit').find(':submit').attr('disabled', false);
             }
         });
     });
