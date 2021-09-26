@@ -253,6 +253,7 @@ INSTALLED_APPS += (
     'django_jinja',
     'martor',
     'adminsortable2',
+    'rest_framework', 
 )
 
 MIDDLEWARE = (
