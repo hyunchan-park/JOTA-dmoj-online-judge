@@ -10,24 +10,22 @@ from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
 
 from judge.models import (
-    Contest, ContestParticipation, ContestTag, Judge, Language, Organization, Problem, ProblemType, Profile, Rating,
-    Submission, SubmissionSource, SubmissionTestCase
+    Contest, ContestParticipation, ContestTag, Judge, Language, Organization, Problem, ProblemType, Profile, Rating, Submission, SubmissionSource, SubmissionTestCase,
 )
-from judge.utils.infinite_paginator import InfinitePaginationMixin
-from judge.utils.raw_sql import join_sql_subquery, use_straight_join
-from judge.views.submission import group_test_cases
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from judge.models.profile import Profile
-from judge.models.problem import Problem
-from judge.models.runtime import Language
+from judge.utils.infinite_paginator import InfinitePaginationMixin
+from judge.utils.raw_sql import join_sql_subquery, use_straight_join
+from judge.views.submission import group_test_cases
+
 import json
-from time import sleep
-from itertools import groupby
+
 from collections import namedtuple
+from itertools import groupby
+from time import sleep
 
 class BaseSimpleFilter:
     def __init__(self, lookup):
