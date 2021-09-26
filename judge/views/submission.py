@@ -604,4 +604,3 @@ class UserContestSubmissions(ForceContestMixin, UserProblemSubmissions):
                            self.username, reverse('user_page', args=[self.username]),
                            self.get_problem_number(self.problem),
                            self.contest.name, reverse('contest_view', args=[self.contest.key]))
-

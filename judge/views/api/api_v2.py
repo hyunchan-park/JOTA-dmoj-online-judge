@@ -1,5 +1,10 @@
 from operator import attrgetter
 
+import json
+from collections import namedtuple
+from itertools import groupby
+from time import sleep
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.db.models import Count, F, OuterRef, Prefetch, Q, Subquery
@@ -8,20 +13,13 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
-
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-import json
-from collections import namedtuple
-from itertools import groupby
-from time import sleep
-
 from judge.models import (
-    Contest, ContestParticipation, ContestTag, Judge, Language, Organization, Problem, ProblemType, Profile, Rating, 
+    Contest, ContestParticipation, ContestTag, Judge, Language, Organization, Problem, ProblemType, Profile, Rating,
     Submission, SubmissionSource, SubmissionTestCase,
 )
-
 from judge.utils.infinite_paginator import InfinitePaginationMixin
 from judge.utils.raw_sql import join_sql_subquery, use_straight_join
 from judge.views.submission import group_test_cases
@@ -787,7 +785,7 @@ class APISubmissionFromJcode(APIView):
             Http404: (404, 'page/object not found'),
         }
 
-        if type(exception) == Profile.DoesNotExist: 
+        if type(exception) == Profile.DoesNotExist:
             return Response('user id is not valid', status=405)
 
         if type(exception) == Problem.DoesNotExist:
@@ -807,7 +805,7 @@ class APISubmissionFromJcode(APIView):
                 status=status_code,
             )
         else:
-            raise exception 
+            raise exception
 
     def combine_status(self, status_cases, submission, TC):
         ret = []
@@ -830,20 +828,19 @@ class APISubmissionFromJcode(APIView):
         data = request.data
 
         try:
-            submit = Submission(
-                user = Profile.objects.get(user__username=data['user']),
-                problem = Problem.objects.get(code=data['problem']),
-                language = Language.objects.get(key=data['language']),
-            )
+            submit = Submission(user = Profile.objects.get(user__username=data['user']),
+                                problem = Problem.objects.get(code=data['problem']),
+                                language = Language.objects.get(key=data['language']))
         except Exception as e:
             return self.get_error(e)
 
         submit.save()
 
-        source = SubmissionSource(submission = submit, source = data['source'])
+        source = SubmissionSource(submission=submit,
+                                 source=data['source'])
         source.save()
 
-        submit.judge(judge_id = data['judge_id'])
+        submit.judge(judge_id=data['judge_id'])
 
         sleep(1)
 
@@ -860,7 +857,7 @@ class APISubmissionFromJcode(APIView):
                 ret += result_sub.result
             ret += "  http://203.254.143.156:8001/submission/"
 
-            if submit.id != None:
+            if submit.id is not None:
                 ret += str(submit.id)
 
             print(ret)
