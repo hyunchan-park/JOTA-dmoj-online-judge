@@ -1,9 +1,8 @@
-from operator import attrgetter
-
 import json
 from collections import namedtuple
 from itertools import groupby
 from time import sleep
+from operator import attrgetter
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
@@ -828,16 +827,15 @@ class APISubmissionFromJcode(APIView):
         data = request.data
 
         try:
-            submit = Submission(user = Profile.objects.get(user__username=data['user']),
-                                problem = Problem.objects.get(code=data['problem']),
-                                language = Language.objects.get(key=data['language']))
+            submit = Submission(user=Profile.objects.get(user__username=data['user']),
+                                problem=Problem.objects.get(code=data['problem']),
+                                language=Language.objects.get(key=data['language']))
         except Exception as e:
             return self.get_error(e)
 
         submit.save()
 
-        source = SubmissionSource(submission=submit,
-                                 source=data['source'])
+        source = SubmissionSource(submission=submit, source=data['source'])
         source.save()
 
         submit.judge(judge_id=data['judge_id'])
