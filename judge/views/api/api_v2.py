@@ -1,8 +1,8 @@
 import json
 from collections import namedtuple
 from itertools import groupby
-from time import sleep
 from operator import attrgetter
+from time import sleep
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
@@ -808,6 +808,7 @@ class APISubmissionFromJcode(APIView):
 
     def combine_status(self, status_cases, submission, TC):
         ret = []
+        TestCase = namedtuple('TestCase', 'id status batch num_combined')
         # If the submission is not graded and the final case is a batch,
         # we don't actually know if it is completed or not, so just remove it.
         # if not submission.is_graded and len(status_cases) > 0: #and status_cases[-1].batch is not None:
