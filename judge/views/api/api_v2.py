@@ -9,23 +9,23 @@ from django.utils.functional import cached_property
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
 
-from judge.models import (
-    Contest, ContestParticipation, ContestTag, Judge, Language, Organization, Problem, ProblemType, Profile, Rating, Submission, SubmissionSource, SubmissionTestCase,
-)
-
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.views import APIView
+
+import json
+from collections import namedtuple
+from itertools import groupby
+from time import sleep
+
+from judge.models import (
+    Contest, ContestParticipation, ContestTag, Judge, Language, Organization, Problem, ProblemType, Profile, Rating, 
+    Submission, SubmissionSource, SubmissionTestCase,
+)
 
 from judge.utils.infinite_paginator import InfinitePaginationMixin
 from judge.utils.raw_sql import join_sql_subquery, use_straight_join
 from judge.views.submission import group_test_cases
 
-import json
-
-from collections import namedtuple
-from itertools import groupby
-from time import sleep
 
 class BaseSimpleFilter:
     def __init__(self, lookup):
@@ -738,9 +738,7 @@ class APIJudgeList(APIListView):
         }
 
 
-######
 class APISubmissionFromJcode(APIView):
-    #TestCase = namedtuple('TestCase', 'id status batch num_combined')
     TestCase = namedtuple('TestCase', 'status time memory')
 
     def group_test_cases(self, cases):
@@ -760,7 +758,7 @@ class APISubmissionFromJcode(APIView):
             result.append(self.make_batch(last, buf))
             status.extend(self.get_statuses(last, buf))
         return result, status
-    
+
     def make_batch(self, batch, cases):
         result = {'id': batch, 'cases': cases}
         if batch:
@@ -771,7 +769,6 @@ class APISubmissionFromJcode(APIView):
         return result
 
     def get_statuses(self, batch, cases):
-        #cases = [self.TestCase(id=case.id, status=case.status, batch=batch, num_combined=1) for case in cases]
         cases = [self.TestCase(status=case.status, time=case.time, memory=case.memory) for case in cases]
         if batch:
             # Get the first non-AC case if it exists.
@@ -788,12 +785,10 @@ class APISubmissionFromJcode(APIView):
             PermissionDenied: (403, 'permission denied'),
             APILoginRequiredException: (403, 'login required'),
             Http404: (404, 'page/object not found'),
-            #DoesNotExist: (405, 'user id is not valid'),
         }
 
-        if type(exception) == Profile.DoesNotExist: #yh
+        if type(exception) == Profile.DoesNotExist: 
             return Response('user id is not valid', status=405)
-            #return JsonResponse()
 
         if type(exception) == Problem.DoesNotExist:
             return Response('problem code is not valid', status=405)
@@ -812,13 +807,13 @@ class APISubmissionFromJcode(APIView):
                 status=status_code,
             )
         else:
-            raise exception   
+            raise exception 
 
     def combine_status(self, status_cases, submission, TC):
         ret = []
         # If the submission is not graded and the final case is a batch,
         # we don't actually know if it is completed or not, so just remove it.
-        #if not submission.is_graded and len(status_cases) > 0: #and status_cases[-1].batch is not None:
+        # if not submission.is_graded and len(status_cases) > 0: #and status_cases[-1].batch is not None:
         #    status_cases.pop()
 
         for key, group in groupby(status_cases, key=attrgetter('status')):
@@ -826,11 +821,10 @@ class APISubmissionFromJcode(APIView):
 
             if len(group) > 10:
                 # Grab the first case's id so the user can jump to that case, and combine the rest.
-                #ret.append(TestCase(id=group[0].id, status=key, batch=None, num_combined=len(group)))
                 ret.append(TestCase(status=key, time=group[0].time, memory=group[0].memory))
             else:
                 ret.extend(group)
-        return ret 
+        return ret
 
     def post(self, request):
         data = request.data
@@ -838,8 +832,8 @@ class APISubmissionFromJcode(APIView):
         try:
             submit = Submission(
                 user = Profile.objects.get(user__username=data['user']),
-                problem = Problem.objects.get(code = data['problem']),
-                language = Language.objects.get(key = data['language']),
+                problem = Problem.objects.get(code=data['problem']),
+                language = Language.objects.get(key=data['language']),
             )
         except Exception as e:
             return self.get_error(e)
@@ -853,27 +847,27 @@ class APISubmissionFromJcode(APIView):
 
         sleep(1)
 
-        TC = SubmissionTestCase.objects.filter(submission_id = submit.id)
+        TC = SubmissionTestCase.objects.filter(submission_id=submit.id)
 
         batches, status = self.group_test_cases(submit.test_cases.all())
-        
-        result_sub = Submission.objects.get(id = submit.id)
-        
+
+        result_sub = Submission.objects.get(id=submit.id)
+
         if (result_sub.result != "AC" and result_sub.result != "WA"):
             ret = "error code : "
 
-            if result_sub.result != None:
+            if result_sub.result is not None:
                 ret += result_sub.result
             ret += "  http://203.254.143.156:8001/submission/"
 
             if submit.id != None:
                 ret += str(submit.id)
-            
+
             print(ret)
             return Response(ret, status=405)
 
         outs = self.combine_status(status, submit, TC)
 
         json_ret = json.dumps(outs)
-        
+
         return Response(json_ret, status=200)
