@@ -644,19 +644,13 @@ class ProblemSubmit(LoginRequiredMixin, ProblemMixin, TitleMixin, SingleObjectFo
             else:
                 self.new_submission.save()
 
-            data_dict = dict(form.data)['source_files'][0]
-            if (len(data_dict) > 0):
-                dummy = data_dict
-                print("multiple\n", dummy)
-                source = SubmissionSource(submission=self.new_submission, source=dummy)
-                source.save()
+            source_json_str = dict(form.data)['source_files'][0]
+            if (len(source_json_str) > 0):
+                source = SubmissionSource(submission=self.new_submission, source=source_json_str)
             else:
-                dummy = {
-                    'main.c': form.cleaned_data['source'],
-                }
-                print("single\n", json.dumps(dummy))
-                source = SubmissionSource(submission=self.new_submission, source=json.dumps(dummy))
-                source.save()
+                single_source_dict = {None: form.cleaned_data['source']}
+                source = SubmissionSource(submission=self.new_submission, source=json.dumps(single_source_dict))
+            source.save()
 
         # Save a query.
         self.new_submission.source = source
