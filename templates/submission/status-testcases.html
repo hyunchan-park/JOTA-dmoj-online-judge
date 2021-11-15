@@ -98,12 +98,23 @@
                     {% if print_case_output %}
                         <td colspan="5" class="case-output">
                             <div class="case-info">
-                                <strong>{{ _('Your output (clipped)') }}</strong>
-                                {% if prefix_length is none %}
-                                    <pre class="case-output">{{ case.output|linebreaksbr }}</pre>
-                                {% else %}
-                                    <pre class="case-output">{{ case.output[:prefix_length]|linebreaksbr }}</pre>
-                                {% endif %}
+                                <div class="user-output">
+                                    <strong>{{ _('Your output') }}</strong>
+                                    {% if prefix_length is none %}
+                                        <pre class="case-output">{{ case.output|linebreaksbr }}</pre>
+                                    {% else %}
+                                        <pre class="case-output">{{ case.output[:prefix_length]|linebreaksbr }}</pre>
+                                    {% endif %}
+                                </div>
+                                <div class="vertical-line"></div>
+                                <div class="answer-output">
+                                    <strong>{{ _('Answer') }}</strong>
+                                    {% if prefix_length is none %}
+                                        <pre class="case-output">{{ case.output|linebreaksbr }}</pre>
+                                    {% else %}
+                                        <pre class="case-output">{{ case.output[:prefix_length]|linebreaksbr }}</pre>
+                                    {% endif %}
+                                </div>
                             </div>
                         </td>
                     {% endif %}

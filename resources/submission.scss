@@ -263,6 +263,7 @@ label[for="language"], label[for="status"] {
     }
 
     .case-info {
+        float: left;
         margin: 0;
         padding-left: 1em;
         padding-bottom: 3px;
@@ -272,6 +273,25 @@ label[for="language"], label[for="status"] {
         border-radius: 4px;
         color: #222;
     }
+    
+    .case-info .vertical-line {
+        border-left: 1px solid #2980b9;
+        height: 100%;
+        float: left;
+    }
+
+    .case-info .user-output {
+        float: left;
+        width: 200px;
+        height: 100px;
+    }
+
+    .case-info .answer-output {
+        float: left;
+        margin-left: 5px;
+        width: 200px;
+        height: 100px;
+    }
 
     .case-output {
         margin: 0;
@@ -280,7 +300,7 @@ label[for="language"], label[for="status"] {
 
     table td {
         margin: 0;
-        padding: 0 5px 0 0;
+        padding: 0 10px 0 0;
     }
 
     .toggle {
