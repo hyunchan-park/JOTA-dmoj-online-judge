@@ -100,20 +100,24 @@
                             <div class="case-info">
                                 <div class="user-output">
                                     <strong>{{ _('Your output') }}</strong>
-                                    {% if prefix_length is none %}
-                                        <pre class="case-output">{{ case.output|linebreaksbr }}</pre>
-                                    {% else %}
-                                        <pre class="case-output">{{ case.output[:prefix_length]|linebreaksbr }}</pre>
-                                    {% endif %}
+                                    {% for patch in case.diff_result %}
+                                        {% if patch[0] is -1 %}
+                                            <span class="user-patch"> {{ patch[1]|linebreaksbr }} </span>
+                                        {% elif patch[0] is 0 %}
+                                            <span> {{ patch[1]|linebreaksbr }} </span>
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
                                 <div class="vertical-line"></div>
                                 <div class="answer-output">
                                     <strong>{{ _('Answer') }}</strong>
-                                    {% if prefix_length is none %}
-                                        <pre class="case-output">{{ case.output|linebreaksbr }}</pre>
-                                    {% else %}
-                                        <pre class="case-output">{{ case.output[:prefix_length]|linebreaksbr }}</pre>
-                                    {% endif %}
+                                    {% for patch in case.diff_result %}
+                                        {% if patch[0] is 1 %}
+                                            <span class="answer-patch"> {{ patch[1]|linebreaksbr }} </span>
+                                        {% elif patch[0] is 0 %}
+                                            <span> {{ patch[1]|linebreaksbr }} </span>
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
                             </div>
                         </td>
