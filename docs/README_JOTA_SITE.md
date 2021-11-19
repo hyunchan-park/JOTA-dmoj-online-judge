@@ -42,6 +42,7 @@ original: https://docs.dmoj.ca/#/site/installation?id=creating-the-database
     ```
 
 ## Installing prerequisites
+앞으로 진행할과정에서 8001, 9999 포트 번호를 사용합니다. 충돌이 나지 않게 주의해주세요.
 original: https://docs.dmoj.ca/#/site/installation?id=installing-prerequisites
 
 * jota 디렉토리 생성 및 이동
