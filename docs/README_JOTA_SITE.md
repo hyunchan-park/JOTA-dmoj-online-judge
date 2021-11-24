@@ -183,19 +183,29 @@ original: https://docs.dmoj.ca/#/site/installation?id=setting-up-celery
 original: https://docs.dmoj.ca/#/site/installation?id=running-the-server
 
 
-1. 웹 서버를 열기 위한 새 SSH 연결 세션을 만듭니다. (세션 #1)
+1. 웹 서버를 열기 위한 새 SSH 연결 세션을 만들어서 test해봅니다. (세션 #1)
+   잘 동작하는 것이 확인 되었으면 Ctrl-C로 빠져나옵니다.
+   
     ```
     ~$ . ~/jota/dmojsite/bin/activate
     (dmojsite) ~$ sudo python3 ~/jota/site/manage.py runserver 0.0.0.0:8001
     ```
 
-2. bridged를 실행하기 위한 새 SSH 연결 세션을 만듭니다. (세션 #2)
+2. bridged 실행을 test하기 위한 새 SSH 연결 세션을 만듭니다. (세션 #2) 
     ```
     ~$ . ~/jota/dmojsite/bin/activate
     (dmojsite) ~$ sudo python3 ~/jota/site/manage.py runbridged
     ```
+3. Celery workers가 실행되는지 test합니다. 
+   ```
+   sudo pip3 install redis
+   (dmojsite) ~$ celery -A ~/jota/site/dmoj_celery worker
+   ```
 
-3. JOTA Site (e.g. http://localhost:8001/ or http://<외부IP>:8001) 에 잘 접속되는지 확인합니다.
+4. 모든 test가 완료 된 후, 1번 과정으로 다시 서버를 띄우고
+   JOTA Site (e.g. http://localhost:8001/ or http://<외부IP>:8001) 에 잘 접속되는지 확인합니다.
+
+## 아래 내용은 개발이 아닌 운영을 위해 필수적인 내용들 입니다.
 
 ## Setting up uWSGI
 original: https://docs.dmoj.ca/#/site/installation?id=setting-up-uwsgi
