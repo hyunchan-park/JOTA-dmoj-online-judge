@@ -263,14 +263,26 @@ label[for="language"], label[for="status"] {
     }
 
     .case-info {
+        min-width: 300px;
+        min-height: 50px;
+        float: left;
         margin: 0;
         padding-left: 1em;
         padding-bottom: 3px;
         padding-top: 3px;
         border: 1px solid #2980b9;
-        border-left-width: .5em;
-        border-radius: 4px;
+        border-top-width: .5em;
         color: #222;
+    }
+
+    .wrong-word {
+        background-color: #ffd2e3;
+        margin: 0 -4px 0 0;
+    }
+
+    .right-word {
+        background-color: #b1dbfb;
+        margin: 0 -4px 0 0;
     }
 
     .case-output {
@@ -280,7 +292,7 @@ label[for="language"], label[for="status"] {
 
     table td {
         margin: 0;
-        padding: 0 5px 0 0;
+        padding: 0 10px 0 0;
     }
 
     .toggle {

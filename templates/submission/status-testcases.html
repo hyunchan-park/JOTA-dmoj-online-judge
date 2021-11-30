@@ -93,25 +93,32 @@
                 {% endif %}
             </tr>
 
-            {% if print_case_output or case.extended_feedback %}
+            {% if print_case_output %}
                 <tr id="{{ case.id }}-output" style="display:none" class="case-feedback toggled">
                     {% if print_case_output %}
                         <td colspan="5" class="case-output">
                             <div class="case-info">
-                                <strong>{{ _('Your output (clipped)') }}</strong>
-                                {% if prefix_length is none %}
-                                    <pre class="case-output">{{ case.output|linebreaksbr }}</pre>
-                                {% else %}
-                                    <pre class="case-output">{{ case.output[:prefix_length]|linebreaksbr }}</pre>
-                                {% endif %}
-                            </div>
-                        </td>
-                    {% endif %}
-                    {% if case.extended_feedback %}
-                        <td colspan="5" class="case-ext-feedback">
+                                <strong>{{ _('Your output') }}</strong>
+                                <br>
+                                {% for patch in diff_result[loop.index0] %}
+                                    {% if patch[0] == -1 %}
+                                        <span class="wrong-word">{{patch[1]|linebreaksbr}}</span>
+                                    {% elif patch[0] == 0 %}
+                                        <span class="right-word">{{patch[1]|linebreaksbr}}</span>
+                                    {% endif %}
+                                {% endfor %}
+                                </div>
                             <div class="case-info">
-                                <strong>{{ _('Judge feedback') }}</strong>
-                                <pre class="case-output">{{ case.extended_feedback|linebreaksbr }}</pre>
+                                <strong>{{ _('Correct Answer') }}</strong>
+                                    <br>
+                                    {% for patch in diff_result[loop.index0] %}
+                                        {% if patch[0] == 1 %}
+                                            <span class="wrong-word">{{patch[1]|linebreaksbr}}</span>
+                                        {% elif patch[0] == 0 %}
+                                            <span class="right-word">{{patch[1]|linebreaksbr}}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
                             </div>
                         </td>
                     {% endif %}
