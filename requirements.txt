@@ -36,3 +36,6 @@ netaddr
 webauthn
 bleach
 django-admin-sortable2
+djangorestframework
+markdown
+django-filter

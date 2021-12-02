@@ -1,4 +1,8 @@
+import json
+from collections import namedtuple
+from itertools import groupby
 from operator import attrgetter
+from time import sleep
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
@@ -8,10 +12,12 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from judge.models import (
     Contest, ContestParticipation, ContestTag, Judge, Language, Organization, Problem, ProblemType, Profile, Rating,
-    Submission,
+    Submission, SubmissionSource, SubmissionTestCase,
 )
 from judge.utils.infinite_paginator import InfinitePaginationMixin
 from judge.utils.raw_sql import join_sql_subquery, use_straight_join
@@ -727,3 +733,137 @@ class APIJudgeList(APIListView):
             'load': judge.load,
             'languages': list(judge.runtimes.values_list('key', flat=True)),
         }
+
+
+class APISubmissionFromJCode(APIView):
+    TestCase = namedtuple('TestCase', 'status time memory')
+
+    def group_test_cases(self, cases):
+        print("cases", cases)
+        result = []
+        status = []
+        buf = []
+        last = None
+        for case in cases:
+            if case.batch != last and buf:
+                result.append(self.make_batch(last, buf))
+                status.extend(self.get_statuses(last, buf))
+                buf = []
+            buf.append(case)
+            last = case.batch
+        if buf:
+            result.append(self.make_batch(last, buf))
+            status.extend(self.get_statuses(last, buf))
+        return result, status
+
+    def make_batch(self, batch, cases):
+        result = {'id': batch, 'cases': cases}
+        if batch:
+            result['points'] = min(map(attrgetter('points'), cases))
+            result['total'] = max(map(attrgetter('total'), cases))
+
+        print("result", result)
+        return result
+
+    def get_statuses(self, batch, cases):
+        cases = [self.TestCase(status=case.status, time=case.time, memory=case.memory) for case in cases]
+        if batch:
+            # Get the first non-AC case if it exists.
+            return [next((case for case in cases if case.status != 'AC'), cases[0])]
+        else:
+            return cases
+
+    def get_error(self, exception):
+        print(type(exception), exception)
+
+        caught_exceptions = {
+            ValueError: (400, 'invalid filter value type'),
+            ValidationError: (400, 'invalid filter value type'),
+            PermissionDenied: (403, 'permission denied'),
+            APILoginRequiredException: (403, 'login required'),
+            Http404: (404, 'page/object not found'),
+        }
+
+        if type(exception) == Profile.DoesNotExist:
+            return Response('user id is not valid', status=405)
+
+        if type(exception) == Problem.DoesNotExist:
+            return Response('problem code is not valid', status=405)
+
+        if type(exception) == Language.DoesNotExist:
+            return Response('Language is not valid', status=405)
+
+        exception_type = type(exception)
+        if exception_type in caught_exceptions:
+            status_code, message = caught_exceptions[exception_type]
+            return JsonResponse(
+                self.get_base_response(error={
+                    'code': status_code,
+                    'message': message,
+                }),
+                status=status_code,
+            )
+        else:
+            raise exception
+
+    def combine_status(self, status_cases, submission, TC):
+        ret = []
+        TestCase = namedtuple('TestCase', 'id status batch num_combined')
+        # If the submission is not graded and the final case is a batch,
+        # we don't actually know if it is completed or not, so just remove it.
+        # if not submission.is_graded and len(status_cases) > 0: #and status_cases[-1].batch is not None:
+        #    status_cases.pop()
+
+        for key, group in groupby(status_cases, key=attrgetter('status')):
+            group = list(group)
+
+            if len(group) > 10:
+                # Grab the first case's id so the user can jump to that case, and combine the rest.
+                ret.append(TestCase(status=key, time=group[0].time, memory=group[0].memory))
+            else:
+                ret.extend(group)
+        return ret
+
+    def post(self, request):
+        data = request.data
+
+        try:
+            submit = Submission(user=Profile.objects.get(user__username=data['user']),
+                                problem=Problem.objects.get(code=data['problem']),
+                                language=Language.objects.get(key=data['language']))
+        except Exception as e:
+            return self.get_error(e)
+
+        submit.save()
+
+        source = SubmissionSource(submission=submit, source=data['source'])
+        source.save()
+
+        submit.judge(judge_id=data['judge_id'])
+
+        sleep(1)
+
+        TC = SubmissionTestCase.objects.filter(submission_id=submit.id)
+
+        batches, status = self.group_test_cases(submit.test_cases.all())
+
+        result_sub = Submission.objects.get(id=submit.id)
+
+        if (result_sub.result != "AC" and result_sub.result != "WA"):
+            ret = "error code : "
+
+            if result_sub.result is not None:
+                ret += result_sub.result
+            ret += "  http://203.254.143.156:8001/submission/"
+
+            if submit.id is not None:
+                ret += str(submit.id)
+
+            print(ret)
+            return Response(ret, status=405)
+
+        outs = self.combine_status(status, submit, TC)
+
+        json_ret = json.dumps(outs)
+
+        return Response(json_ret, status=200)
