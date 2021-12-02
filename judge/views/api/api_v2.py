@@ -735,7 +735,7 @@ class APIJudgeList(APIListView):
         }
 
 
-class APISubmissionFromJcode(APIView):
+class APISubmissionFromJCode(APIView):
     TestCase = namedtuple('TestCase', 'status time memory')
 
     def group_test_cases(self, cases):
