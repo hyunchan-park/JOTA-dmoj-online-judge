@@ -280,7 +280,7 @@ urlpatterns = [
             url(r'^participations$', api.api_v2.APIContestParticipationList.as_view()),
             url(r'^languages$', api.api_v2.APILanguageList.as_view()),
             url(r'^judges$', api.api_v2.APIJudgeList.as_view()),
-            url(r'^submit/jcode$', api.api_v2.APISubmissionFromJcode.as_view()),
+            url(r'^submit/jcode$', api.api_v2.APISubmissionFromJCode.as_view()),
         ])),
     ])),
 
