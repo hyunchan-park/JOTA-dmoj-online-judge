@@ -42,7 +42,8 @@ original: https://docs.dmoj.ca/#/site/installation?id=creating-the-database
     ```
 
 ## Installing prerequisites
-original: https://docs.dmoj.ca/#/site/installation?id=installing-prerequisites
+ + 앞으로 진행할과정에서 8001, 9999 포트 번호를 사용합니다. 충돌이 나지 않게 주의해주세요.
+ original: https://docs.dmoj.ca/#/site/installation?id=installing-prerequisites
 
 * jota 디렉토리 생성 및 이동
 
@@ -67,12 +68,13 @@ original: https://docs.dmoj.ca/#/site/installation?id=installing-prerequisites
     
 * python3 관련 패키지 모두 설치
     ```
+    (dmojsite) ~/jota/site$ sudo pip install --upgrade jinja2
+    (dmojsite) ~/jota/site$ sudo pip install --upgrade cryptography
     (dmojsite) ~/jota/site$ sudo pip3 install -r requirements.txt
     (dmojsite) ~/jota/site$ sudo pip3 install mysqlclient
-    (dmojsite) ~/jota/site$ sudo pip install --upgrade jinja2
     ```
     
-* curl 명령어로 `local_settings.py` 파일 다운로드
+* curl 명령어로 `local_settings.py` 파일 다운로드 (dmojsite가 activate되지 않아도 할 수 있는 과정)
   ```
   ~/jota/site$ curl -o dmoj/local_settings.py https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/local_settings.py
   ```
@@ -88,7 +90,13 @@ original: https://docs.dmoj.ca/#/site/installation?id=installing-prerequisites
       ```
       ALLOWED_HOSTS = ['<IP-Address>']
       ```
-
+  + 할당받은 외부 IP는 JCLOUD에서 따로 받은 floating ip을 의미함 (ppt 참고)
+  
+  * CELERY_BROKER_URL, CELERY_RESULT_BACKEND 주석 해제
+      ```
+      CELERY_BROKER_URL = 'redis://localhost:6379'
+      CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+      ```
   * DATABASES 내 PASSWORD 항목 수정
 
       ```db
@@ -184,7 +192,7 @@ original: https://docs.dmoj.ca/#/site/installation?id=running-the-server
 
 
 1. 웹 서버를 열기 위한 새 SSH 연결 세션을 만들어서 test해봅니다. (세션 #1)
-   잘 동작하는 것이 확인 되었으면 Ctrl-C로 빠져나옵니다.
+   
    
     ```
     ~$ . ~/jota/dmojsite/bin/activate
@@ -197,12 +205,13 @@ original: https://docs.dmoj.ca/#/site/installation?id=running-the-server
     (dmojsite) ~$ sudo python3 ~/jota/site/manage.py runbridged
     ```
 3. Celery workers가 실행되는지 test합니다. 
+   잘 동작하는 것이 확인 되었으면 Ctrl-C로 빠져나옵니다.
    ```
    sudo pip3 install redis
    (dmojsite) ~$ celery -A ~/jota/site/dmoj_celery worker
    ```
 
-4. 모든 test가 완료 된 후, 1번 과정으로 다시 서버를 띄우고
+4. 모든 test가 완료 된 후, 세션 #1과 세션 #2로 서버를 띄우고
    JOTA Site (e.g. http://localhost:8001/ or http://<외부IP>:8001) 에 잘 접속되는지 확인합니다.
 
 ## 아래 내용은 개발이 아닌 운영을 위해 필수적인 내용들 입니다.
