@@ -135,7 +135,6 @@ def group_test_cases(cases):
             result.append(make_batch(last, buf))
             status.extend(get_statuses(last, buf))
             buf = []
-        # case['diff_result'] = diff_match_patch().diff_main(case.output, case.extended_feedback)
         diff.append(diff_match_patch().diff_main(case.output, case.extended_feedback))
         buf.append(case)
         last = case.batch
@@ -143,8 +142,7 @@ def group_test_cases(cases):
     if buf:
         result.append(make_batch(last, buf))
         status.extend(get_statuses(last, buf))
-    for i in diff:
-        print(i)
+
     return result, status, max_execution_time, diff
 
 
@@ -158,7 +156,6 @@ class SubmissionStatus(SubmissionDetailBase):
 
         context['batches'], statuses, context['max_execution_time'], context['diff_result'] = group_test_cases(submission.test_cases.all())
         context['statuses'] = combine_statuses(statuses, submission)
-        # context['diff_result'] = [(-1, "left"),(1, "right"),(0, "same")]
         context['time_limit'] = submission.problem.time_limit
         try:
             lang_limit = submission.problem.language_limits.get(language=submission.language)
