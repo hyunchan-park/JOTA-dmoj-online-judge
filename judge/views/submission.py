@@ -1,4 +1,5 @@
 import json
+from diff_match_patch import diff_match_patch
 from collections import namedtuple
 from itertools import groupby
 from operator import attrgetter
@@ -124,6 +125,7 @@ def group_test_cases(cases):
     result = []
     status = []
     buf = []
+    diff = []
     max_execution_time = 0.0
     last = None
     for case in cases:
@@ -133,12 +135,15 @@ def group_test_cases(cases):
             result.append(make_batch(last, buf))
             status.extend(get_statuses(last, buf))
             buf = []
+        diff.append(diff_match_patch().diff_main(case.output, case.extended_feedback))
         buf.append(case)
         last = case.batch
+        
     if buf:
         result.append(make_batch(last, buf))
         status.extend(get_statuses(last, buf))
-    return result, status, max_execution_time
+
+    return result, status, max_execution_time, diff
 
 
 class SubmissionStatus(SubmissionDetailBase):
@@ -149,9 +154,8 @@ class SubmissionStatus(SubmissionDetailBase):
         submission = self.object
         context['last_msg'] = event.last()
 
-        context['batches'], statuses, context['max_execution_time'] = group_test_cases(submission.test_cases.all())
+        context['batches'], statuses, context['max_execution_time'], context['diff_result'] = group_test_cases(submission.test_cases.all())
         context['statuses'] = combine_statuses(statuses, submission)
-
         context['time_limit'] = submission.problem.time_limit
         try:
             lang_limit = submission.problem.language_limits.get(language=submission.language)
@@ -169,6 +173,7 @@ class SubmissionTestCaseQuery(SubmissionStatus):
         if 'id' not in request.GET or not request.GET['id'].isdigit():
             return HttpResponseBadRequest()
         self.kwargs[self.pk_url_kwarg] = kwargs[self.pk_url_kwarg] = int(request.GET['id'])
+        
         return super(SubmissionTestCaseQuery, self).get(request, *args, **kwargs)
 
 
