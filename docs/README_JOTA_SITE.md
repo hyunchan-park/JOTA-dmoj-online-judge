@@ -72,7 +72,8 @@ original: https://docs.dmoj.ca/#/site/installation?id=installing-prerequisites
     (dmojsite) ~/jota/site$ sudo pip install --upgrade jinja2
     ```
     
-* curl 명령어로 `local_settings.py` 파일 다운로드
+    
+* curl 명령어로 `local_settings.py` 파일 다운로드 (dmojsite가 activate되지 않아도 할 수 있는 과정)
   ```
   ~/jota/site$ curl -o dmoj/local_settings.py https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/local_settings.py
   ```
@@ -82,13 +83,15 @@ original: https://docs.dmoj.ca/#/site/installation?id=installing-prerequisites
     ```
     ~/jota/site$ vi dmoj/local_settings.py
     ```
+   
 
   * 할당받은 외부IP 이용 시 ALLOWED_HOSTS 항목 수정
 
       ```
       ALLOWED_HOSTS = ['<IP-Address>']
       ```
-
+    할당받은 외부 IP는 JCLOUD에서 따로 받은 floating ip을 의미함
+    
   * DATABASES 내 PASSWORD 항목 수정
 
       ```db
