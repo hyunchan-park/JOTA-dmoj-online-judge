@@ -57,6 +57,7 @@
 8. 생성한 인스턴스에 접속합니다.
 
     - SSH 접속 방법
+    - 만약 SSH접속 시 사용자이름을 입력해야한다면 ubuntu로 설정합니다.
 
     ```
     IP = 좌측 상단 JCloud 로고 [cse-students(xxx.xxx.xxx.xxx) ▼] 중 "xxx.xxx.xxx.xxx" 입력
@@ -96,4 +97,6 @@
     $ git config --global user.name "Gildong Hong"
     $ git config --global user.email "gildonghong@example.com"
     ```
+
+    
 
