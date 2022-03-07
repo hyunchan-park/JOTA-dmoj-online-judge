@@ -42,8 +42,9 @@ original: https://docs.dmoj.ca/#/site/installation?id=creating-the-database
     ```
 
 ## Installing prerequisites
- + 앞으로 진행할과정에서 8001, 9999 포트 번호를 사용합니다. 충돌이 나지 않게 주의해주세요.
+ 앞으로 진행할과정에서 8001, 9999 포트 번호를 사용합니다. 충돌이 나지 않게 주의해주세요.
  original: https://docs.dmoj.ca/#/site/installation?id=installing-prerequisites
+
 
 * jota 디렉토리 생성 및 이동
 
@@ -74,6 +75,7 @@ original: https://docs.dmoj.ca/#/site/installation?id=creating-the-database
     (dmojsite) ~/jota/site$ sudo pip3 install mysqlclient
     ```
     
+=======    
 * curl 명령어로 `local_settings.py` 파일 다운로드 (dmojsite가 activate되지 않아도 할 수 있는 과정)
   ```
   ~/jota/site$ curl -o dmoj/local_settings.py https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/local_settings.py
@@ -84,6 +86,7 @@ original: https://docs.dmoj.ca/#/site/installation?id=creating-the-database
     ```
     ~/jota/site$ vi dmoj/local_settings.py
     ```
+   
 
   * 할당받은 외부IP 이용 시 ALLOWED_HOSTS 항목 수정
 
@@ -97,6 +100,7 @@ original: https://docs.dmoj.ca/#/site/installation?id=creating-the-database
       CELERY_BROKER_URL = 'redis://localhost:6379'
       CELERY_RESULT_BACKEND = 'redis://localhost:6379'
       ```
+
   * DATABASES 내 PASSWORD 항목 수정
 
       ```db
